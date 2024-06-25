@@ -9,6 +9,10 @@ terraform {
       source  = "hashicorp/random"
       version = "~> 3.5"
     }
+    azapi = {
+      source = "azure/azapi"
+      version = "~> 1.13"
+    }
   }
 }
 
@@ -16,6 +20,8 @@ provider "azurerm" {
   features {}
 }
 
+provider "azapi"{
+}
 
 ## Section to provide a random Azure region for the resource group
 # This allows us to randomize the region for the resource group.
@@ -37,11 +43,25 @@ module "naming" {
   version = "~> 0.3"
 }
 
-# This is required for resource modules
-resource "azurerm_resource_group" "this" {
-  location = module.regions.regions[random_integer.region_index.result].name
-  name     = module.naming.resource_group.name_unique
+data "azurerm_client_config" "current" {
 }
+
+resource "azurerm_resource_group" "example" {
+  name     = module.naming.resource_group.name_unique
+  location = "West Europe"
+}
+
+resource "azurerm_storage_account" "example" {
+  name                     = module.naming.storage_account.name_unique 
+  resource_group_name      = azurerm_resource_group.example.name
+  location                 = azurerm_resource_group.example.location
+  account_tier             = "Standard"
+  account_replication_type = "GRS"
+
+  tags = {
+    environment = "staging"
+  }
+} 
 
 # This is the module call
 # Do not specify location here due to the randomization above.
@@ -49,11 +69,13 @@ resource "azurerm_resource_group" "this" {
 # with a data source.
 module "test" {
   source = "../../"
-  # source             = "Azure/avm-<res/ptn>-<name>/azurerm"
-  # ...
-  location            = azurerm_resource_group.this.location
-  name                = "TODO" # TODO update with module.naming.<RESOURCE_TYPE>.name_unique
-  resource_group_name = azurerm_resource_group.this.name
-
-  enable_telemetry = var.enable_telemetry # see variables.tf
+  location            = "southeastasia"
+  name                = module.naming.log_analytics_workspace.name_unique
+  subscription_id     = data.azurerm_client_config.current.subscription_id
+  tags                = {"env" ="test"}
+  categories          = ["Write"]
+  locations           = ["southeastasia", "eastasia"]
+  retentionpolicy_days = 10
+  retentionpolicy_enabled = true
+  storage_account_id = azurerm_storage_account.example.id
 }
