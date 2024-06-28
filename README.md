@@ -36,14 +36,14 @@ The following providers are used by this module:
 
 - <a name="provider_azapi"></a> [azapi](#provider\_azapi) (>= 1.9.0, < 2.0.0)
 
-- <a name="provider_random"></a> [random](#provider\_random) (>= 3.5.0, < 4.0.0)
+- <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm)
 
 ## Resources
 
 The following resources are used by this module:
 
 - [azapi_resource.example](https://registry.terraform.io/providers/Azure/azapi/latest/docs/resources/resource) (resource)
-- [random_id.telem](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/id) (resource)
+- [azurerm_resource_group_template_deployment.telemetry](https://registry.terraform.io/providers/hashicorp/azurerm/latest/docs/resources/resource_group_template_deployment) (resource)
 
 <!-- markdownlint-disable MD013 -->
 ## Required Inputs
@@ -59,6 +59,12 @@ Type: `string`
 ### <a name="input_name"></a> [name](#input\_name)
 
 Description: The name of the this resource.
+
+Type: `string`
+
+### <a name="input_resource_group_name"></a> [resource\_group\_name](#input\_resource\_group\_name)
+
+Description: Resource Group name details.
 
 Type: `string`
 

@@ -10,6 +10,11 @@ variable "name" {
   nullable    = false
 }
 
+variable "resource_group_name" {
+  type        = string
+  description = "Resource Group name details."
+}
+
 variable "subscription_id" {
   type        = string
   description = "Azure subscription where logprofile insights should be deployed."
