@@ -1,19 +1,19 @@
 terraform {
   required_version = "~> 1.5"
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.74"
-    }
-    random = {
-      source  = "hashicorp/random"
-      version = "~> 3.5"
-    }
-    azapi = {
-      source  = "azure/azapi"
-      version = "~> 1.13"
-    }
+required_providers {
+  azapi = {
+    source  = "azure/azapi"
+    version = "~> 1.13"
   }
+  azurerm = {
+    source  = "hashicorp/azurerm"
+    version = "~> 3.74"
+  }
+  random = {
+    source  = "hashicorp/random"
+    version = "~> 3.5"
+  }
+}
 }
 
 provider "azurerm" {
@@ -51,7 +51,7 @@ resource "azurerm_resource_group" "example" {
 }
 
 resource "azurerm_storage_account" "example" {
-  account_replication_type = "GRS"
+  account_replication_type = "ZRS"
   account_tier             = "Standard"
   location                 = azurerm_resource_group.example.location
   name                     = module.naming.storage_account.name_unique
