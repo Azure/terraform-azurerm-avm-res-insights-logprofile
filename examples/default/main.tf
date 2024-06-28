@@ -10,7 +10,7 @@ terraform {
       version = "~> 3.5"
     }
     azapi = {
-      source = "azure/azapi"
+      source  = "azure/azapi"
       version = "~> 1.13"
     }
   }
@@ -20,7 +20,7 @@ provider "azurerm" {
   features {}
 }
 
-provider "azapi"{
+provider "azapi" {
 }
 
 ## Section to provide a random Azure region for the resource group
@@ -43,39 +43,37 @@ module "naming" {
   version = "~> 0.3"
 }
 
-data "azurerm_client_config" "current" {
-}
+data "azurerm_client_config" "current" {}
 
 resource "azurerm_resource_group" "example" {
-  name     = module.naming.resource_group.name_unique
   location = "West Europe"
+  name     = module.naming.resource_group.name_unique
 }
 
 resource "azurerm_storage_account" "example" {
-  name                     = module.naming.storage_account.name_unique 
-  resource_group_name      = azurerm_resource_group.example.name
-  location                 = azurerm_resource_group.example.location
-  account_tier             = "Standard"
   account_replication_type = "GRS"
-
+  account_tier             = "Standard"
+  location                 = azurerm_resource_group.example.location
+  name                     = module.naming.storage_account.name_unique
+  resource_group_name      = azurerm_resource_group.example.name
   tags = {
     environment = "staging"
   }
-} 
+}
 
 # This is the module call
 # Do not specify location here due to the randomization above.
 # Leaving location as `null` will cause the module to use the resource group location
 # with a data source.
 module "test" {
-  source = "../../"
-  location            = "southeastasia"
-  name                = module.naming.log_analytics_workspace.name_unique
-  subscription_id     = data.azurerm_client_config.current.subscription_id
-  tags                = {"env" ="test"}
-  categories          = ["Write"]
-  locations           = ["southeastasia", "eastasia"]
-  retentionpolicy_days = 10
+  source                  = "../../"
+  location                = "southeastasia"
+  name                    = module.naming.log_analytics_workspace.name_unique
+  subscription_id         = data.azurerm_client_config.current.subscription_id
+  tags                    = { "env" = "test" }
+  categories              = ["Write"]
+  locations               = ["southeastasia", "eastasia"]
+  retentionpolicy_days    = 10
   retentionpolicy_enabled = true
-  storage_account_id = azurerm_storage_account.example.id
+  storage_account_id      = azurerm_storage_account.example.id
 }
