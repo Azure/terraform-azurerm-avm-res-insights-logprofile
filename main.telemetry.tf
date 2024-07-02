@@ -1,3 +1,8 @@
+resource "random_id" "telemetry" {
+  count = var.enable_telemetry ? 1 : 0
+
+  byte_length = 4
+}
 resource "azurerm_resource_group_template_deployment" "telemetry" {
   count = var.enable_telemetry ? 1 : 0
 
